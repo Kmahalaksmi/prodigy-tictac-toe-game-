@@ -1,1 +1,158 @@
 # prodigy-tictac-toe-game-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 36px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+
+        .winner {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        .reset-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .reset-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tic-Tac-Toe</h1>
+    <div class="board" id="board">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+    </div>
+    <div class="winner" id="winnerMessage"></div>
+    <button class="reset-button" id="resetButton">Restart Game</button>
+
+    <script>
+        const board = document.getElementById('board');
+        const cells = document.querySelectorAll('[data-cell]');
+        const winnerMessage = document.getElementById('winnerMessage');
+        const resetButton = document.getElementById('resetButton');
+
+        let currentPlayer = 'X';
+        let isGameActive = true;
+        const winningCombination = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        function handleClick(event) {
+            const cell = event.target;
+            const cellIndex = Array.from(cells).indexOf(cell);
+
+            if (cell.textContent !== '' || !isGameActive) {
+                return;
+            }
+
+            cell.textContent = currentPlayer;
+            cell.classList.add(`player${currentPlayer}`);
+
+            if (checkWin(currentPlayer)) {
+                winnerMessage.textContent = `Player ${currentPlayer} Wins!`;
+                isGameActive = false;
+            } else if (isDraw()) {
+                winnerMessage.textContent = 'Draw!';
+                isGameActive = false;
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+        }
+
+        function checkWin(player) {
+            return winningCombination.some(combination => {
+                return combination.every(index => {
+                    return cells[index].textContent === player;
+                });
+            });
+        }
+
+        function isDraw() {
+            return [...cells].every(cell => {
+                return cell.textContent === 'X' || cell.textContent === 'O';
+            });
+        }
+
+        function resetGame() {
+            currentPlayer = 'X';
+            isGameActive = true;
+            winnerMessage.textContent = '';
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('playerX', 'playerO');
+            });
+        }
+
+        cells.forEach(cell => cell.addEventListener('click', handleClick));
+        resetButton.addEventListener('click', resetGame);
+    </script>
+</body>
+</html>
